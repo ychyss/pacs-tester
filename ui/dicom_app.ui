@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1092</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DICOM Utility</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="3" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="generate_button">
+        <property name="text">
+         <string>Generate DICOM</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="delete_button">
+        <property name="text">
+         <string>Delete DICOM</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;说明&lt;/span&gt;: &lt;/p&gt;&lt;p&gt;输入请选择series文件夹&lt;/p&gt;&lt;p&gt;输出将产生多个series&lt;/p&gt;&lt;p&gt;生成是随机产生PatientID,PatientName,PatientBirthDate,PatientSex, StudyInstanceUID,SeriesInstanceUID&lt;/p&gt;&lt;p&gt;发送会同时发送所有的series到目标PACS&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="input_dir_label">
+        <property name="text">
+         <string>Input Directory:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="input_dir_edit">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="input_dir_btn">
+        <property name="text">
+         <string>输入路径</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="output_dir_label">
+        <property name="text">
+         <string>Output Directory:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="output_dir_edit">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="output_dir_btn">
+        <property name="text">
+         <string>输出路径</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>生成数量:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="series_count_spinbox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="5" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QPushButton" name="send_button">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Send DICOM</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>并发线程:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="worker_num">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>20</number>
+        </property>
+        <property name="value">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="6" column="0">
+     <widget class="QPushButton" name="clear_log_button">
+      <property name="text">
+       <string>Clear Log</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QTextEdit" name="log_viewer">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="gateway_ae_label">
+        <property name="text">
+         <string>Gateway AE:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="gateway_ae_edit">
+        <property name="text">
+         <string>DCM_GATEWAY</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="gateway_host_label">
+        <property name="text">
+         <string>Gateway Host:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="gateway_host_edit">
+        <property name="text">
+         <string>192.168.1.200</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="gateway_port_label">
+        <property name="text">
+         <string>Gateway Port:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="gateway_port_edit">
+        <property name="text">
+         <string>32005</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="dcm4che_path_label">
+        <property name="text">
+         <string>dcm4che Path:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="dcm4che_path_edit">
+        <property name="text">
+         <string>/home/hys/apps/dcm4che-5.26.0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1092</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

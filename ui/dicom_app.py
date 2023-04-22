@@ -16,8 +16,8 @@ class DicomApp(QtWidgets.QMainWindow):
     '''
     def __init__(self):
         super().__init__()
-
-        uic.loadUi('dicom_app.ui', self)
+        # TODO 这里的路径指定方式不是很好
+        uic.loadUi('ui/dicom_app.ui', self)
         # event
         self.generate_button.clicked.connect(self.generate_dicom)
         self.send_button.clicked.connect(self.send_dicom)

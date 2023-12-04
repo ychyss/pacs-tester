@@ -11,6 +11,7 @@ PACS Tester 是一个用于生成和发送 DICOM 序列到 PACS 系统的小工�
 ├── test_data            # 存放生成的数据，用于发送给 PACS 系统
 ├── ui                   # 存放 PyQt 的 UI 内容，包括 DICOMApp 类
 ├── utils                # 存放 DICOMManager，DICOMSender 和其他功能性工具
+├── scripts              # 存放一些好用的脚本,具体请查看脚本注释
 └── main.py              # 入口
 └── README.md            # 项目说明文档
 
@@ -31,6 +32,15 @@ PACS Tester 主要有以下功能：
 6. 输入 PACS 系统的相关信息（AE title、主机名、端口号等），然后点击 "Send DICOM" 按钮将生成的 DICOM 序列发送到 PACS 系统。
 7. 如有需要，点击 "Delete DICOM" 按钮删除输出目录中的生成的 DICOM 序列。
 8. (可选的)使用命令行参数运行,可以通过python main.py -h 查看参数详情
+9.  python main.py --generate --input-dir ./source_data/Head --output-dir ./test_data --series-count 10
+10. python main.py --delete --input-dir ./source_data/Head --output-dir ./test_data
+11. python main.py --send --input-dir ./source_data/Head --output-dir ./test_data --gateway-ae DCM_GATEWAY --gateway-host 192.168.1.200 --gateway-port 32005 --dcm4che-path ./dcm4che-5.26.0 --max-workers 2
+9. ./distribute.sh
+10. cluster_test.sh
+    1. ./cluster_test.sh --remote-host=root@bmecluster01 --remote-host=root@bmcluster02 --generate --series-count 10 
+    2. ./cluster_test.sh --remote-host=root@bmecluster01 --remote-host=root@bmcluster02 --send --gateway-ae DCM_GATEWAY --gateway-host 192.168.1.200 --gateway-port 32005 --dcm4che-path ./dcm4che-5.26.0 --max-workers 2
+    3. 
+
 ## 开发环境
 - Python 3.7+
 - PyQt5

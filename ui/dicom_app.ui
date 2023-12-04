@@ -115,6 +115,13 @@
     <item row="5" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
+       <widget class="QPushButton" name="echo_button">
+        <property name="text">
+         <string>Echo</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="send_button">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -217,7 +224,7 @@
       <item>
        <widget class="QLineEdit" name="dcm4che_path_edit">
         <property name="text">
-         <string>/home/hys/apps/dcm4che-5.26.0</string>
+         <string>./dcm4che-5.26.0</string>
         </property>
        </widget>
       </item>

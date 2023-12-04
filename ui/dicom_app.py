@@ -1,5 +1,10 @@
 import os
 import sys
+import threading
+from pynetdicom import AE
+from pynetdicom.sop_class import Verification
+from datetime import datetime
+
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QVBoxLayout,QTextBrowser, QHBoxLayout, QPushButton, QTextEdit, QLabel, QFileDialog
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog
@@ -25,6 +30,7 @@ class DicomApp(QtWidgets.QMainWindow):
         self.input_dir_btn.clicked.connect(self.select_input_directory)
         self.output_dir_btn.clicked.connect(self.select_output_directory)
         self.clear_log_button.clicked.connect(self.clear_log)
+        self.echo_button.clicked.connect(self.echo_pacs)
         # self.delete_pacs_button.clicked.connect(self.delete_pacs_studies)
         # 存储值
         self.input_directory = os.getcwd()
@@ -33,6 +39,11 @@ class DicomApp(QtWidgets.QMainWindow):
         self.input_dir_edit.setText(self.input_directory)
 
     def log_message(self, msg, msg_type='info'):
+        """
+        :param msg: 'success': 'green', 'info': 'black', 'warning': 'orange', 'error': 'red'
+        :param msg_type:
+        :return:
+        """
         color_map = {
             'success': 'green',
             'info': 'black',
@@ -136,6 +147,35 @@ class DicomApp(QtWidgets.QMainWindow):
         manager = DicomManager(input_dir=self.input_directory, output_dir=self.output_directory)
         manager.delete_dicom_series()
         self.log_message(f'Deleted generated DICOM files in: {self.output_directory}', msg_type="success")
+
+    def echo_pacs(self):
+        ae = AE(ae_title="ECHO-TEST")
+        # 添加 CTImageStorage 请求上下文
+        ae.add_requested_context(Verification)
+
+        gateway_host = self.gateway_host_edit.text()
+        gateway_port = int(self.gateway_port_edit.text())
+        # TODO 未作参数检查
+        scp_address = (gateway_host, gateway_port)
+        assoc = ae.associate(*scp_address)
+        self.log_message("正在建立连接(Connecting)...")
+        if assoc.is_established:
+            # 记录发送开始时间
+            start_time = datetime.now()
+            # 发送 C-STORE 请求
+            assoc.send_c_echo(666)
+            # 记录发送结束时间
+            end_time = datetime.now()
+            self.log_message(f'Echo时间(Total time taken for echo): {end_time - start_time}', 'success')
+            # 释放连接
+            assoc.release()
+        else:
+            if assoc.is_rejected:
+                self.log_message(f"Association rejected", 'error')
+            elif assoc.is_aborted:
+                self.log_message("Association aborted by the server", 'error')
+            else:
+                self.log_message("Association failed for an unknown reason", 'error')
 
 
 if __name__ == '__main__':

@@ -2,6 +2,14 @@ import os
 import pydicom
 import pydicom.uid
 import datetime
+import platform
+
+def is_linux():
+    return platform.system() == "Linux"
+
+
+def is_windows():
+    return platform.system() == "Windows"
 
 
 def modify_dicom_attributes(input_dir, output_dir, new_patient_id, new_patient_name, new_patient_birth_date,
@@ -40,16 +48,21 @@ def modify_dicom_attributes(input_dir, output_dir, new_patient_id, new_patient_n
 
 if __name__ == '__main__':
     pass
-    # # 示例：批量修改指定目录中的 DICOM 文件的 PatientID、PatientName、PatientBirthDate 和 PatientSex，并将修改后的文件保存到新目录
-    # series_dir = './Head'
-    # new_series_dir = './Head_new'
-    # new_patient_id = '4f264a73-b127-4a75-9a9b-d435ac1a43d9'
-    # new_patient_name = 'HU YANG SHENG'
-    # new_patient_birthdate = '19931012'  # 使用 YYYYMMDD 格式
-    # new_patient_sex = 'M'  # 使用 'M'（男性）或 'F'（女性）
-    #
-    # modify_dicom_attributes(series_dir, new_series_dir, new_patient_id, new_patient_name, new_patient_birthdate, new_patient_sex)
+    # 示例：批量修改指定目录中的 DICOM 文件的 PatientID、PatientName、PatientBirthDate 和 PatientSex，并将修改后的文件保存到新目录
+    series_dir = '../source_data/Ankle'
+    new_series_dir = '../test_data/hys_ankle'
+    if not os.path.exists(new_series_dir):
+        os.mkdir(new_series_dir)
+    new_patient_id = 'GMABC125135'
+    new_patient_name = 'Yangsheng Hu'
+    new_patient_birthdate = '20100401'  # 使用 YYYYMMDD 格式
+    new_patient_sex = 'M'  # 使用 'M'（男性）或 'F'（女性）
+    new_study_uid = pydicom.uid.generate_uid()
+    new_series_uid = pydicom.uid.generate_uid()
 
+    modify_dicom_attributes(series_dir, new_series_dir,
+                            new_patient_id, new_patient_name, new_patient_birthdate, new_patient_sex,
+                            new_study_uid, new_series_uid)
     # 发送多个series到pacs
     # dcm4che_path = '/apps/dcm4che-5.26.0'
     # series_dirs = ['path/to/your/series1', 'path/to/your/series2', 'path/to/your/series3']

@@ -4,6 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import re
 import requests
+from utils.pacs_util import is_windows
 
 
 class SendResult:
@@ -25,23 +26,31 @@ class DicomSender:
     该测试用于向网关并发发送多个存储，以确保网关能够正确导出到其他存储库
     """
 
-    def __init__(self, gateway_ae, gateway_host, gateway_port, dcm4che_path='/home/hys/apps/dcm4che-5.26.0'):
+    def __init__(self, gateway_ae, gateway_host, gateway_port, dcm4che_path='/ home/hys/apps/dcm4che-5.26.0'):
         self.gateway_ae = gateway_ae
         self.gateway_host = gateway_host
         self.gateway_port = gateway_port
         self.dcm4che_path = dcm4che_path
 
     def send_directory(self, dicom_directory):
-        storescu_path = os.path.join(self.dcm4che_path, 'bin', 'storescu')
+        if is_windows:
+            storescu_path = os.path.join(self.dcm4che_path, 'bin', 'storescu.bat')
+        else:
+            storescu_path = os.path.join(self.dcm4che_path, 'bin', 'storescu')
         cmd = [storescu_path, '-c', f'{self.gateway_ae}@{self.gateway_host}:{self.gateway_port}', dicom_directory]
-
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
 
-        return stdout.decode('utf-8'), stderr.decode('utf-8')
+        if is_windows:
+            return stdout.decode("gbk"), stderr.decode('gbk')
+        else:
+            return stdout.decode('utf-8'), stderr.decode('utf-8')
 
     def send_dicom_series(self, series_dir):
-        storescu_path = os.path.join(self.dcm4che_path, 'bin', 'storescu')
+        if is_windows:
+            storescu_path = os.path.join(self.dcm4che_path, 'bin', 'storescu.bat')
+        else:
+            storescu_path = os.path.join(self.dcm4che_path, 'bin', 'storescu')
         start_time = time.perf_counter()
         success = True
         error = None
@@ -86,7 +95,11 @@ class DicomSender:
                 process_future(future)
 
     def query_all_studies(self):
-        findscu_path = os.path.join(self.dcm4che_path, 'bin', 'findscu')
+        if is_windows:
+            findscu_path = os.path.join(self.dcm4che_path, 'bin', 'findscu.bat')
+        else:
+            findscu_path = os.path.join(self.dcm4che_path, 'bin', 'findscu')
+
         findscu_command = [findscu_path, '-c', f'{self.gateway_ae}@{self.gateway_host}:{self.gateway_port}', '-L', 'STUDY', '-m', 'StudyInstanceUID=*']
         output = subprocess.check_output(" ".join(findscu_command), shell=True, text=True)
 

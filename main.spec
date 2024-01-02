@@ -3,6 +3,7 @@ from PyInstaller.utils.hooks import collect_submodules
 
 hiddenimports = []
 hiddenimports += collect_submodules('pydicom')
+hiddenimports += collect_submodules('pynetdicom')
 
 
 block_cipher = None

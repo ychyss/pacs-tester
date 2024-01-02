@@ -22,8 +22,8 @@ def main():
     parser.add_argument('--max-workers', type=int, help="Number of workers (required for --send mode)")
 
     args = parser.parse_args()
-
-    if args.gui:
+    # 如果没参数就直接启动GUI
+    if args.gui or len(sys.argv) == 1:
         app = QApplication(sys.argv)
         window = DicomApp()
         window.show()

@@ -279,6 +279,7 @@ def do_find_instances(calling_ae,
     ds.InstitutionName = ''
     ds.StationName = ''
     ds.SOPInstanceUID = ''
+    ds.SOPClassUID = ''
     ds.Rows = 0
     ds.Columns = 0
     ds.BitsAllocated = 0
@@ -317,6 +318,7 @@ def do_find_instances(calling_ae,
                             'InstitutionName': identifier.InstitutionName,
                             'StationName': identifier.StationName,
                             'SOPInstanceUID': identifier.SOPInstanceUID,
+                            'SOPClassUID': identifier.SOPClassUID,
                             'Rows': identifier.Rows,
                             'Columns': identifier.Columns,
                             'BitsAllocated': identifier.BitsAllocated,
@@ -340,12 +342,12 @@ def do_find_instances(calling_ae,
 
 
 if __name__ == '__main__':
-    birth_date = '19421012'
+    birth_date = '19800101'
     calling = 'HYS-LAPTOP'
-    scp_host = '172.16.75.155'
-    scp_port = 32704
+    scp_host = '192.168.1.200'
+    scp_port = 30205
     scp_ae_title = "DCM4CHEE"
-    
+
     pp = do_find_patient(calling, scp_host, scp_port, scp_ae_title, birth_date)
     print("patients:", pp)
     if len(pp) > 0:

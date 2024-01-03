@@ -3,10 +3,12 @@ from pydicom.dataset import Dataset
 from pynetdicom import AE, debug_logger
 from pynetdicom.sop_class import PatientRootQueryRetrieveInformationModelFind
 from pynetdicom.sop_class import StudyRootQueryRetrieveInformationModelFind
-from typing import List, Dict
+from typing import List, Dict, Union
 
 
-def do_find_patient(calling_ae, scp_host, scp_port, scp_ae_title, patient_birth_date: str) -> List[Dict]:
+def do_find_patient(calling_ae,
+                    scp_host, scp_port, scp_ae_title,
+                    patient_birth_date: str) -> Union[List[Dict], None]:
     """
 
     :param calling_ae:
@@ -52,8 +54,10 @@ def do_find_patient(calling_ae, scp_host, scp_port, scp_ae_title, patient_birth_
 
         else:
             print('Association rejected, aborted or never connected')
+            return None
     except Exception as e:
         print(e)
+        return None
     finally:
         # Release the association
         assoc.release()
@@ -61,7 +65,9 @@ def do_find_patient(calling_ae, scp_host, scp_port, scp_ae_title, patient_birth_
     return patients
 
 
-def do_find_studies(calling_ae, scp_host, scp_port, scp_ae_title, patient_id):
+def do_find_studies(calling_ae,
+                    scp_host, scp_port, scp_ae_title,
+                    patient_id: str) -> Union[List[Dict], None]:
     """
 
     :param calling_ae:
@@ -129,6 +135,7 @@ def do_find_studies(calling_ae, scp_host, scp_port, scp_ae_title, patient_id):
             print('Association rejected, aborted or never connected')
     except Exception as e:
         print(e)
+        return None
     finally:
         # Release the association
         assoc.release()
@@ -136,7 +143,9 @@ def do_find_studies(calling_ae, scp_host, scp_port, scp_ae_title, patient_id):
     return studies
 
 
-def do_find_series(calling_ae, scp_host, scp_port, scp_ae_title, patient_id, study_ins_uid):
+def do_find_series(calling_ae,
+                   scp_host, scp_port, scp_ae_title,
+                   patient_id: str, study_ins_uid: str) -> Union[List[Dict], None]:
     """
 
     :param patient_id:
@@ -217,8 +226,10 @@ def do_find_series(calling_ae, scp_host, scp_port, scp_ae_title, patient_id, stu
 
         else:
             print('Association rejected, aborted or never connected')
+            return None
     except Exception as e:
         print(e)
+        return None
     finally:
         # Release the association
         assoc.release()
@@ -226,7 +237,9 @@ def do_find_series(calling_ae, scp_host, scp_port, scp_ae_title, patient_id, stu
     return series
 
 
-def do_find_instances(calling_ae, scp_host, scp_port, scp_ae_title, patient_id, study_ins_uid, series_ins_uid):
+def do_find_instances(calling_ae,
+                      scp_host, scp_port, scp_ae_title,
+                      patient_id: str, study_ins_uid: str, series_ins_uid: str) -> Union[List[Dict], None]:
     """
 
     :param study_ins_uid:
@@ -315,8 +328,10 @@ def do_find_instances(calling_ae, scp_host, scp_port, scp_ae_title, patient_id, 
 
         else:
             print('Association rejected, aborted or never connected')
+            return None
     except Exception as e:
         print(e)
+        return None
     finally:
         # Release the association
         assoc.release()
@@ -326,20 +341,25 @@ def do_find_instances(calling_ae, scp_host, scp_port, scp_ae_title, patient_id, 
 
 if __name__ == '__main__':
     birth_date = '19421012'
-    pp = do_find_patient('HYS-LAPTOP', '172.16.75.155', 32704, "DCM4CHEE", birth_date)
+    calling = 'HYS-LAPTOP'
+    scp_host = '172.16.75.155'
+    scp_port = 32704
+    scp_ae_title = "DCM4CHEE"
+    
+    pp = do_find_patient(calling, scp_host, scp_port, scp_ae_title, birth_date)
     print("patients:", pp)
     if len(pp) > 0:
-        ss = do_find_studies('HYS-LAPTOP', '172.16.75.155', 32704, "DCM4CHEE", pp[0]['PatientID'])
+        ss = do_find_studies(calling, scp_host, scp_port, scp_ae_title, pp[0]['PatientID'])
         print("studies:", ss)
 
         if len(ss) > 0:
-            get_series = do_find_series('HYS-LAPTOP', '172.16.75.155', 32704, "DCM4CHEE",
+            get_series = do_find_series(calling, scp_host, scp_port, scp_ae_title,
                                         pp[0]['PatientID'], ss[0]['StudyInstanceUID'])
             print("series:", get_series)
 
             if len(get_series) > 0:
                 for se in get_series:
-                    get_instances = do_find_instances('HYS-LAPTOP', '172.16.75.155', 32704, "DCM4CHEE",
+                    get_instances = do_find_instances(calling, scp_host, scp_port, scp_ae_title,
                                                       pp[0]['PatientID'], ss[0]['StudyInstanceUID'], se['SeriesInstanceUID'])
                     print('instances:', get_instances)
 

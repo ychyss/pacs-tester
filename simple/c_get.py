@@ -1,11 +1,10 @@
 from pydicom.dataset import Dataset
 import threading
-from pynetdicom import AE, evt, build_role, debug_logger
-from pynetdicom.sop_class import (
-    PatientRootQueryRetrieveInformationModelGet,
-    CTImageStorage
-)
+from pynetdicom import AE, evt, build_role, debug_logger, StoragePresentationContexts
+from pynetdicom.sop_class import PatientRootQueryRetrieveInformationModelGet, _STORAGE_CLASSES
 
+def is_valid_sop_class_uid(sop_cls_uid):
+    return sop_cls_uid in _STORAGE_CLASSES.values()
 
 class DICOMGetRetrieve:
     def __init__(self, calling_ae, scp_host, scp_port, scp_ae_title):
@@ -82,11 +81,17 @@ if __name__ == '__main__':
     scp_host = '192.168.1.200'
     scp_port = 30205
     scp_ae_title = "DCM4CHEE"
-    pid = '123456'
-    studyid = '1111.2222.3333.4445.20210811003743'
-    ssid = '1.3.46.670589.33.1.63764453753942632000002.4783910794170731801'
-    sopid = '1.3.46.670589.33.1.63764453840849602800001.4656080259000860486'
+    # pid = '123456'
+    # studyid = '1111.2222.3333.4445.20210811003743'
+    # ssid = '1.3.46.670589.33.1.63764453753942632000002.4783910794170731801'
+    # sopid = '1.3.46.670589.33.1.63764453840849602800001.4656080259000860486'
+
+    # pid = '123456'
+    # studyid = '1111.2222.3333.4445.20210811003743'
+    # ssid = '1.3.46.670589.33.1.63764453753942632000002.4783910794170731801'
+    # sopid = '1.3.46.670589.33.1.63764453840849602800001.4656080259000860486'
 
     retriever = DICOMGetRetrieve(calling, scp_host, scp_port, scp_ae_title)
-    retriever.do_get_instance(pid, studyid, ssid, sopid, '1.2.840.10008.5.1.4.1.1.2')
-
+    ds = retriever.do_get_instance(pid, studyid, ssid, sopid, '1.2.840.10008.5.1.4.1.1.2')
+    ds.save_as(ds.SOPInstanceUID+'.dcm', write_like_original=False)
+    # print(is_valid_sop_class_uid('1.2.840.10008.5.1.4.1.1.2'))

@@ -65,6 +65,65 @@ def do_find_patient(calling_ae,
     return patients
 
 
+def do_find_patient_by_id(calling_ae,
+                    scp_host, scp_port, scp_ae_title,
+                    patient_id: str) -> Union[List[Dict], None]:
+    """
+
+    :param calling_ae:
+    :param scp_host:
+    :param scp_port:
+    :param scp_ae_title:
+    :param patient_birth_date:
+    :return: 字典列表，包括患者基本信息和检查数量
+    """
+    # debug_logger()
+    ae = AE(calling_ae)
+    ae.add_requested_context(PatientRootQueryRetrieveInformationModelFind)
+
+    # 这里给出的字段不仅仅是查询条件，还有预备填入的字段
+    ds = Dataset()
+    ds.SpecificCharacterSet = 'ISO_IR 100'
+    ds.PatientID = patient_id
+    ds.QueryRetrieveLevel = 'PATIENT'
+
+    ds.PatientBirthDate = ''
+    ds.PatientName = ''
+    ds.PatientSex = ''
+    ds.NumberOfPatientRelatedStudies = 0
+
+    assoc = ae.associate(scp_host, scp_port, ae_title=scp_ae_title)
+    patients = []
+    try:
+        if assoc.is_established:
+            responses = assoc.send_c_find(ds, PatientRootQueryRetrieveInformationModelFind)
+            for (status, identifier) in responses:
+                if status:
+                    print('C-FIND query status: 0x{0:04X}'.format(status.Status))
+                    if identifier:
+                        patients.append({
+                            "PatientID": identifier.PatientID,
+                            "PatientName": identifier.PatientName,
+                            'PatientBirthDate': identifier.PatientBirthDate,
+                            "PatientSex": identifier.PatientSex,
+                            "NumberOfPatientRelatedStudies": identifier.NumberOfPatientRelatedStudies
+                        })
+                else:
+                    print('Connection timed out, was aborted or received invalid response')
+
+        else:
+            print('Association rejected, aborted or never connected')
+            return None
+    except Exception as e:
+        print(e)
+        return None
+    finally:
+        # Release the association
+        assoc.release()
+
+    return patients
+
+
 def do_find_studies(calling_ae,
                     scp_host, scp_port, scp_ae_title,
                     patient_id: str) -> Union[List[Dict], None]:
@@ -101,6 +160,84 @@ def do_find_studies(calling_ae,
     ds.StudyDescription = ''
     ds.AccessionNumber = ''
     ds.ModalitiesInStudy = ""
+    ds.NumberOfStudyRelatedSeries = 0
+
+    assoc = ae.associate(scp_host, scp_port, ae_title=scp_ae_title)
+    studies = []
+    try:
+        if assoc.is_established:
+            # Send the C-FIND request
+            responses = assoc.send_c_find(ds, StudyRootQueryRetrieveInformationModelFind)
+            for (status, identifier) in responses:
+                if status:
+                    print('C-FIND query status: 0x{0:04X}'.format(status.Status))
+                    if identifier:
+                        studies.append({
+                            'PatientID': identifier.PatientID,
+                            'PatientName': identifier.PatientName,
+                            'PatientBirthDate': identifier.PatientBirthDate,
+                            'PatientAge': identifier.PatientAge,
+                            'PatientSex': identifier.PatientSex,
+                            "StudyInstanceUID": identifier.StudyInstanceUID,
+                            'StudyID': identifier.StudyID,
+                            'StudyDate': identifier.StudyDate,
+                            'StudyTime': identifier.StudyTime,
+                            'StudyDescription': identifier.StudyDescription,
+                            'AccessionNumber': identifier.AccessionNumber,
+                            "SOPClassesInStudy": identifier.ModalitiesInStudy,
+                            'NumberOfStudyRelatedSeries': identifier.NumberOfStudyRelatedSeries
+                        })
+                else:
+                    print('Connection timed out, was aborted or received invalid response')
+
+        else:
+            print('Association rejected, aborted or never connected')
+    except Exception as e:
+        print(e)
+        return None
+    finally:
+        # Release the association
+        assoc.release()
+
+    return studies
+
+
+def do_find_studies_by_modality(calling_ae,
+                    scp_host, scp_port, scp_ae_title,
+                    mod: str):
+    """
+
+        :param calling_ae:
+        :param scp_host:
+        :param scp_port:
+        :param scp_ae_title:
+        :param patient_id:
+        :return:
+        """
+    # debug_logger()
+
+    ae = AE(calling_ae)
+    ae.add_requested_context(StudyRootQueryRetrieveInformationModelFind)
+
+    # 这里给出的字段不仅仅是查询条件，还有预备填入的字段
+    # 这里给出的字段不仅仅是查询条件，还有预备填入的字段
+    ds = Dataset()
+
+    ds.SpecificCharacterSet = 'ISO_IR 100'
+    ds.QueryRetrieveLevel = 'STUDY'
+    ds.ModalitiesInStudy = mod
+
+    ds.PatientID = ''
+    ds.PatientName = ''
+    ds.PatientAge = ''
+    ds.PatientBirthDate = ''
+    ds.PatientSex = ''
+    ds.StudyInstanceUID = ''
+    ds.StudyID = ''
+    ds.StudyDate = ''
+    ds.StudyTime = ''
+    ds.StudyDescription = ''
+    ds.AccessionNumber = ''
     ds.NumberOfStudyRelatedSeries = 0
 
     assoc = ae.associate(scp_host, scp_port, ae_title=scp_ae_title)
@@ -344,8 +481,8 @@ def do_find_instances(calling_ae,
 if __name__ == '__main__':
     birth_date = '19800101'
     calling = 'HYS-LAPTOP'
-    scp_host = '192.168.1.200'
-    scp_port = 30205
+    scp_host = '172.16.75.155'  # '192.168.1.200'
+    scp_port = 32704  # 30205
     scp_ae_title = "DCM4CHEE"
 
     pp = do_find_patient(calling, scp_host, scp_port, scp_ae_title, birth_date)
@@ -364,4 +501,5 @@ if __name__ == '__main__':
                     get_instances = do_find_instances(calling, scp_host, scp_port, scp_ae_title,
                                                       pp[0]['PatientID'], ss[0]['StudyInstanceUID'], se['SeriesInstanceUID'])
                     print('instances:', get_instances)
-
+    # ss = do_find_studies_by_modality(calling, scp_host, scp_port, scp_ae_title, "DX")
+    # print(len(ss))

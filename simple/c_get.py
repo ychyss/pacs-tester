@@ -3,8 +3,10 @@ import threading
 from pynetdicom import AE, evt, build_role, debug_logger, StoragePresentationContexts
 from pynetdicom.sop_class import PatientRootQueryRetrieveInformationModelGet, _STORAGE_CLASSES
 
+
 def is_valid_sop_class_uid(sop_cls_uid):
     return sop_cls_uid in _STORAGE_CLASSES.values()
+
 
 class DICOMGetRetrieve:
     def __init__(self, calling_ae, scp_host, scp_port, scp_ae_title):
